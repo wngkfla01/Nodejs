@@ -10,6 +10,9 @@ const MongoClient = require('mongodb').MongoClient;
 // view engine은 EJS를 쓰겠습니다.
 app.set('view engine', 'ejs')
 
+// 나는 static 파일을 보관하기 위해 public 폴더를 쓸거다
+app.use('/public', express.static('public'))
+
 var db;
 MongoClient.connect('mongodb+srv://wngkfla01:danger731@cluster0.nruve.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', function(에러, client){
     if(에러){return console.log(에러)}
@@ -80,7 +83,7 @@ app.delete('/delete', function(요청, 응답){
 
 // /detaili로 접속하면 detail.ejs 보여줌
 app.get('/detail/:id', function(요청, 응답){        // 어떤놈이 'detail/어쩌구'로 GET요청을 하면~
-    db.collection('post').findOne({_id : 요청.params.id}, function(에러, 결과){   //'요청.params.id'는, 파라미터 중 :id라는 뜻
+    db.collection('post').findOne({_id : parseInt(요청.params.id)}, function(에러, 결과){   //'요청.params.id'는, 파라미터 중 :id라는 뜻
         console.log(결과)
         응답.render('detail.ejs', { data : 결과 })
     })

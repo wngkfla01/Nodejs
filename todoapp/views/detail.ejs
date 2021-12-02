@@ -8,6 +8,9 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
+    <!-- public폴더의 css파일 불러옴 -->
+    <link rel="stylesheet" href="/public/main.css">
+
     <title>Hello, world!</title>
   </head>
   <body>
@@ -40,10 +43,17 @@
         </div>
       </div>
     </nav>
-    
-    <h4>상세페이지</h4>
-    <h4>제목: 2번 게시물의 제목</h4>
-    <h4>날짜: 2번 게시물의 날짜</h4>
+    <div class="container mt-4">   
+    <h4 class="text-center">상세페이지</h4>
+    <div class="card" style="width: 100%;">
+        <div class="card-body">
+          <h5 class="card-title"><%= data.제목 %></h5>
+          <h6 class="card-subtitle mb-2 text-muted"><%= data.날짜 %></h6>
+          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          <a href="#" class="card-link">수정하기</a>
+        </div>
+      </div>
+    </div>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
