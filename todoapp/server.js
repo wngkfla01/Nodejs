@@ -7,6 +7,7 @@ app.use(express.urlencoded({extended: true}))
 
 const MongoClient = require('mongodb').MongoClient;
 
+
 // dotenv라이브러리 등록
 require('dotenv').config()
 
@@ -231,3 +232,38 @@ app.delete('/delete', function(요청, 응답){
 app.use('/shop', require('./routes/shop.js'))
 
 app.use('/board/sub', require('./routes/board.js'))
+
+// multer 라이브러리 사용
+let multer = require('multer')
+var storage = multer.diskStorage({
+    destination : function(req, file, cb){
+        cb(null, './public/image')
+    },
+    filename : function(req, file, cb){
+        cb(null, file.originalname)
+    }
+})
+
+var upload = multer({storage : storage})
+
+app.get('/upload', function(요청, 응답){
+    응답.render('upload.ejs')
+})
+
+app.post('/upload', upload.single('프로필'), function(요청, 응답){
+    응답.send('업로드완료')
+})
+
+app.get('/image/:imageName', function(요청, 응답){
+    응답.sendFile(__dirname + '/public/image/' + 요청.params.imageName)
+})
+
+app.post('/chat', function(요청, 응답){
+    db.collection('chatroom').insertOne({member: [요청.body.id, 요청.body.id], date: new Date(), title: 요청.body.title}, function(에러, 결과){
+        응답.redirect('/chat')
+    })
+})
+
+app.get('/chat', function(요청, 응답){
+    응답.render('chat.ejs')
+})
