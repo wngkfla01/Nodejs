@@ -28,7 +28,7 @@ MongoClient.connect(process.env.DB_URL, function (에러, client) {
   db = client.db("todoapp");
 
   // ".listen(파라미터1-서버띄울 포트번호, 파라미터2-띄운 후 실행할 코드)" 으로 서버를 열 수 있다
-  app.listen(process.env.PORT, function () {
+  http.listen(process.env.PORT, function () {
     console.log("listening on 8080");
   });
 });
@@ -122,6 +122,11 @@ app.put("/edit", function (요청, 응답) {
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const session = require("express-session");
+
+// socket.io 셋팅방법
+const http = require("http").createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(http);
 
 app.use(
   session({ secret: "비밀코드", resave: true, saveUninitialized: false })
@@ -317,5 +322,81 @@ app.post("/chat", 로그인했니, function (요청, 응답) {
 });
 
 app.get("/chat", 로그인했니, function (요청, 응답) {
-  응답.render("chat.ejs");
+  db.collection("chatroom")
+    .find({ member: 요청.user._id })
+    .toArray()
+    .then((결과) => {
+      응답.render("chat.ejs", { data: 결과 });
+    });
+});
+
+app.post("/message", 로그인했니, function (요청, 응답) {
+  var 보낼거 = {
+    parent: 요청.body.parent,
+    content: 요청.body.content,
+    userid: 요청.user._id,
+    date: new Date(),
+  };
+  db.collection("message")
+    .insertOne(보낼거)
+    .then(() => {
+      console.log("DB저장성공");
+      응답.send("DB저장성공");
+    });
+});
+
+app.get("/message/:id", 로그인했니, function (요청, 응답) {
+  // Header를 이렇게 수정해주세요~
+  응답.writeHead(200, {
+    Connection: "keep-alive",
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+  });
+
+  // 유저에게 데이터 전송은
+  // event: 보낼데이터이름\n
+  // data: 보낼데이터\n\n
+  db.collection("message")
+    .find({ parent: 요청.params.id })
+    .toArray()
+    .then((결과) => {
+      응답.write("event: test\n");
+      응답.write("data: " + JSON.stringify(결과) + "\n\n");
+    });
+
+  const pipeline = [{ $match: { "fullDocument.parent": 요청.params.id } }];
+  const collection = db.collection("message");
+  const changeStream = collection.watch(pipeline); //watch() 붙이면 실시간 감시해줌
+
+  // 해당 컬렉션에 변동생기면 여기 코드 실행됨
+  changeStream.on("change", (result) => {
+    응답.write("event: test\n");
+    응답.write("data: " + JSON.stringify([result.fullDocument]) + "\n\n");
+  });
+});
+
+// WebSocket: 서버와 유저간 양방향 통신가능
+// 단체채팅 기능구현
+app.get("/socket", function (요청, 응답) {
+  응답.render("socket.ejs");
+});
+
+io.on("connection", function (socket) {
+  console.log("유저접속됨");
+
+  // 채팅방 생성
+  socket.on("joinroom", function (data) {
+    socket.join("room1");
+  });
+
+  socket.on("room1-send", function (data) {
+    io.to("room1").emit("broadcast", data);
+  });
+
+  // 서버가 수신하려면 socket.on(작명, 콜백함수)
+  // 누가 'user-send'이름으로 메세지 보내면 내부 코드 실행해주셈
+  socket.on("user-send", function (data) {
+    // 모든 사람에게 보내줌
+    io.emit("broadcast", data);
+  });
 });

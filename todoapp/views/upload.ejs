@@ -14,25 +14,25 @@
     />
 
     <!-- public폴더의 css파일 불러옴 -->
-    <link rel="stylesheet" href="/public/main.css">
+    <link rel="stylesheet" href="/public/main.css" />
 
     <title>Hello, world!</title>
   </head>
   <body>
     <%- include('nav.html') %>
     <div class="container mt-4">
-        <h4 class="text-center mb-3">업로드페이지</h4>
-        
-        <!-- enctype: 서버로 폼 데이터 전송하는 방식 -->
-        <!-- application/x-www-form-urlencoded: 인코딩되어서 전송-->
-        <!-- multipart/form-data: 인코딩하지말고 그대로 파일 전송해주셈 -->
-        <form method="POST" action="/upload" enctype="multipart/form-data">       
-            <input type="file" name="프로필">
-            <button type="submit">전송</button>
-        </form>
+      <h4 class="text-center mb-3">업로드페이지</h4>
+
+      <!-- enctype: 서버로 폼 데이터 전송하는 방식 -->
+      <!-- application/x-www-form-urlencoded: 인코딩되어서 전송-->
+      <!-- multipart/form-data: 인코딩하지말고 그대로 파일 전송해주셈 -->
+      <form method="POST" action="/upload" enctype="multipart/form-data">
+        <input type="file" name="프로필" />
+        <button type="submit">전송</button>
+      </form>
     </div>
-    
-    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Optional JavaScript; choose one of the two!! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->
     <script
